@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NovaKern Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(to right, #0c0c0c, #111);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    .login-container {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #00ffff60;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #00ffff;
+    }
+
+    .input-group { margin-bottom: 1.2rem; }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: #ccc;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: #0f0f0f;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus { border-color: #00ffff; }
+
+    .toggle-password {
+      margin-top: 0.4rem;
+      text-align: right;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #00ffff;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #00ffff;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover { background-color: #00cccc; }
+
+    .link {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .link a {
+      color: #ff0077;
+      text-decoration: none;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      display: none;
+      height: 1rem;
+    }
+
+    .spinner {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border: 6px solid #00ffff50;
+      border-top-color: #00ffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+      z-index: 10;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(12,12,12,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .login-container { padding: 1.5rem; }
+      .login-container h2 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+    </div>
+
+    <h2>Welcome Back to NovaKern</h2>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Username" required />
+        <div id="usernameError" class="error-message"></div>
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="text" id="email" placeholder="Email" required />
+        <div id="emailError" class="error-message"></div>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Password" required />
+        <div id="passwordError" class="error-message"></div>
+        <div class="toggle-password" onclick="togglePassword()">👁️ Show Password</div>
+      </div>
+
+      <button type="submit">Login</button>
+
+      <div class="link">
+        Don’t have an account? <a href="sign-up.html">Sign up</a>
+      </div>
+    </form>
+
+    <div style="text-align:center; margin-top:1.5rem;">
+      <div id="g_id_onload"
+           data-client_id="574274066662-bh0jsrntu8ri4tbifonvs03ujnc7kv42.apps.googleusercontent.com"
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="handleCredentialResponse"
+           data-auto_prompt="false"></div>
+
+     <div class="g_id_signin"
+     data-type="standard"
+     data-shape="pill"
+     data-theme="filled_black"
+     data-text="continue_with"
+     data-size="large"
+     data-logo_alignment="left">
+</div>
+    </div>
+  </div>
+
+<script>
+  function togglePassword() {
+    const input = document.getElementById('password');
+    const toggle = document.querySelector('.toggle-password');
+    if (input.type === "password") {
+      input.type = "text";
+      toggle.textContent = "🙈 Hide Password";
+    } else {
+      input.type = "password";
+      toggle.textContent = "👁️ Show Password";
+    }
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const errors = ['usernameError', 'emailError', 'passwordError'];
+    errors.forEach(id => {
+      const el = document.getElementById(id);
+      el.textContent = '';
+      el.style.display = 'none';
+    });
+
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    let hasError = false;
+
+    if (!username) { showError('usernameError', 'Username is required.'); hasError = true; }
+    if (!email) { showError('emailError', 'Email is required.'); hasError = true; }
+    if (!password) { showError('passwordError', 'Password is required.'); hasError = true; }
+    if (hasError) return;
+
+    const storedData = localStorage.getItem(`user_${username}`);
+    if (!storedData) { showError('usernameError', 'Username not found. Please sign up.'); return; }
+
+    const userData = JSON.parse(storedData);
+    if (userData.email !== email) { showError('emailError', 'Email does not match this username.'); return; }
+    if (userData.password !== password) { showError('passwordError', 'Incorrect password.'); return; }
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', username);
+
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    setTimeout(() => window.location.href = 'novakern.html', 2000);
+  });
+
+  function showError(id, message) {
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.style.display = 'block';
+  }
+
+  function handleCredentialResponse(response) {
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const username = payload.name || payload.email;
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', username);
+
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    setTimeout(() => window.location.href = 'novakern.html', 2000);
+  }
+</script>
+</body>
+</html>
